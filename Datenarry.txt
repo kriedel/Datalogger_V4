@@ -1,0 +1,16 @@
+HTTP/1.1 200 OK
+Connection: Close
+Content-Type: text/html
+
+<html>
+<body>
+<H3>Datalogging Parameter and Configuration</H3>
+Actual Temperature Outside:  28 °C
+<p>Actual Humidity Inside:  35 %
+<p>Temperature Sensor 2:   0 °C
+<p>Temperature Sensor 3:   0 °C
+<p>Left Days for Logging: 885
+<p>Logging Interval: 120 s
+
+</body>
+</html>

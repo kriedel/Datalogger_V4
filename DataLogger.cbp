@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="DataLogger" />
+		<Option makefile="makefile" />
+		<Option makefile_is_custom="1" />
+		<Option pch_mode="2" />
+		<Option compiler="avrgcc" />
+		<Build>
+			<Target title="all">
+				<Option type="4" />
+				<Option compiler="avrgcc" />
+			</Target>
+			<Target title="clean">
+				<Option output="DataLogger" prefix_auto="1" extension_auto="1" />
+				<Option type="0" />
+				<Option compiler="avrgcc" />
+			</Target>
+			<Target title="dfu">
+				<Option output="DataLogger" prefix_auto="1" extension_auto="1" />
+				<Option type="0" />
+				<Option compiler="avrgcc" />
+			</Target>
+			<Target title="flip">
+				<Option output="DataLogger" prefix_auto="1" extension_auto="1" />
+				<Option type="0" />
+				<Option compiler="avrgcc" />
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-mmcu=at90usb1287" />
+			<Add option="-Wall" />
+			<Add option="-DF_CPU=8000000UL" />
+		</Compiler>
+		<Linker>
+			<Add option="-mmcu=at90usb1287" />
+			<Add option="-Wl,-Map=$(TARGET_OUTPUT_FILE).map,--cref" />
+		</Linker>
+		<Unit filename="../../LUFA/Common/Attributes.h" />
+		<Unit filename="../../LUFA/Common/BoardTypes.h" />
+		<Unit filename="../../LUFA/Common/Common.h" />
+		<Unit filename="../../LUFA/Drivers/Board/Dataflash.h" />
+		<Unit filename="../../LUFA/Drivers/Board/Temperature.h" />
+		<Unit filename="../../LUFA/Drivers/Peripheral/ADC.h" />
+		<Unit filename="../../LUFA/Drivers/Peripheral/AVR8/Serial_AVR8.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../LUFA/Drivers/Peripheral/AVR8/Serial_AVR8.h" />
+		<Unit filename="../../LUFA/Drivers/Peripheral/SPI.h" />
+		<Unit filename="../../LUFA/Drivers/Peripheral/Serial.h" />
+		<Unit filename="../../LUFA/Drivers/Peripheral/TWI.h" />
+		<Unit filename="Descriptors.c">
+			<Option compilerVar="CC" />
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="Descriptors.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="Lib/Arial12x12.h" />
+		<Unit filename="Lib/Arial24x23.h" />
+		<Unit filename="Lib/Arial28x28.h" />
+		<Unit filename="Lib/DataflashManager.c">
+			<Option compilerVar="CC" />
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="Lib/DataflashManager.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="Lib/FATFs/diskio.c">
+			<Option compilerVar="CC" />
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="Lib/FATFs/diskio.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="Lib/FATFs/ff.c">
+			<Option compilerVar="CC" />
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="Lib/FATFs/ff.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="Lib/FATFs/ffconf.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="Lib/FATFs/integer.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="Lib/Funkmodul.c">
+			<Option compilerVar="CC" />
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="Lib/Funkmodul.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="Lib/HYT321.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Lib/HYT321.h" />
+		<Unit filename="Lib/RTC.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Lib/RTC.h" />
+		<Unit filename="Lib/SCSI.c">
+			<Option compilerVar="CC" />
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="Lib/SCSI.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="Lib/W5500.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Lib/W5500.h" />
+		<Unit filename="Lib/font_big.h" />
+		<Unit filename="Lib/ili9341.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Lib/ili9341.h" />
+		<Unit filename="Lib/ili9341_regs.h" />
+		<Unit filename="Lib/lcd.c">
+			<Option compilerVar="CC" />
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="Lib/lcd.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="Lib/wiznet_logo.h" />
+		<Unit filename="TempDataLogger.c">
+			<Option compilerVar="CC" />
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="TempDataLogger.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="makefile" />
+		<Extensions>
+			<code_completion />
+			<debugger />
+			<DoxyBlocks>
+				<comment_style block="0" line="0" />
+				<doxyfile_project />
+				<doxyfile_build />
+				<doxyfile_warnings />
+				<doxyfile_output />
+				<doxyfile_dot />
+				<general />
+			</DoxyBlocks>
+			<envvars />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

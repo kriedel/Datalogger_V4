@@ -1,0 +1,98 @@
+C:\Dokumente und Einstellungen\kriedel\Eigene Dateien\Visual Studio 2008\Projects\TempDataLogger\bin\Debug\TemperatureLogger.exe
+C:\Dokumente und Einstellungen\kriedel\Eigene Dateien\Visual Studio 2008\Projects\TempDataLogger\bin\Debug\TemperatureLogger.pdb
+C:\Dokumente und Einstellungen\kriedel\Eigene Dateien\Visual Studio 2008\Projects\TempDataLogger\bin\Debug\Hid.Net.dll
+C:\Dokumente und Einstellungen\kriedel\Eigene Dateien\Visual Studio 2008\Projects\TempDataLogger\bin\Debug\ZedGraph.dll
+C:\Dokumente und Einstellungen\kriedel\Eigene Dateien\Visual Studio 2008\Projects\TempDataLogger\bin\Debug\Hid.Win32.dll
+C:\Dokumente und Einstellungen\kriedel\Eigene Dateien\Visual Studio 2008\Projects\TempDataLogger\bin\Debug\Hid.Linux.dll
+C:\Dokumente und Einstellungen\kriedel\Eigene Dateien\Visual Studio 2008\Projects\TempDataLogger\bin\Debug\ZedGraph.xml
+C:\Dokumente und Einstellungen\kriedel\Eigene Dateien\Visual Studio 2008\Projects\TempDataLogger\bin\Debug\de\ZedGraph.resources.dll
+C:\Dokumente und Einstellungen\kriedel\Eigene Dateien\Visual Studio 2008\Projects\TempDataLogger\bin\Debug\es\ZedGraph.resources.dll
+C:\Dokumente und Einstellungen\kriedel\Eigene Dateien\Visual Studio 2008\Projects\TempDataLogger\bin\Debug\fr\ZedGraph.resources.dll
+C:\Dokumente und Einstellungen\kriedel\Eigene Dateien\Visual Studio 2008\Projects\TempDataLogger\bin\Debug\hu\ZedGraph.resources.dll
+C:\Dokumente und Einstellungen\kriedel\Eigene Dateien\Visual Studio 2008\Projects\TempDataLogger\bin\Debug\it\ZedGraph.resources.dll
+C:\Dokumente und Einstellungen\kriedel\Eigene Dateien\Visual Studio 2008\Projects\TempDataLogger\bin\Debug\ja\ZedGraph.resources.dll
+C:\Dokumente und Einstellungen\kriedel\Eigene Dateien\Visual Studio 2008\Projects\TempDataLogger\bin\Debug\pt\ZedGraph.resources.dll
+C:\Dokumente und Einstellungen\kriedel\Eigene Dateien\Visual Studio 2008\Projects\TempDataLogger\bin\Debug\ru\ZedGraph.resources.dll
+C:\Dokumente und Einstellungen\kriedel\Eigene Dateien\Visual Studio 2008\Projects\TempDataLogger\bin\Debug\sk\ZedGraph.resources.dll
+C:\Dokumente und Einstellungen\kriedel\Eigene Dateien\Visual Studio 2008\Projects\TempDataLogger\bin\Debug\sv\ZedGraph.resources.dll
+C:\Dokumente und Einstellungen\kriedel\Eigene Dateien\Visual Studio 2008\Projects\TempDataLogger\bin\Debug\tr\ZedGraph.resources.dll
+C:\Dokumente und Einstellungen\kriedel\Eigene Dateien\Visual Studio 2008\Projects\TempDataLogger\bin\Debug\zh-cn\ZedGraph.resources.dll
+C:\Dokumente und Einstellungen\kriedel\Eigene Dateien\Visual Studio 2008\Projects\TempDataLogger\bin\Debug\zh-tw\ZedGraph.resources.dll
+C:\Dokumente und Einstellungen\kriedel\Eigene Dateien\Visual Studio 2008\Projects\TempDataLogger\obj\Debug\ResolveAssemblyReference.cache
+C:\Dokumente und Einstellungen\kriedel\Eigene Dateien\Visual Studio 2008\Projects\TempDataLogger\obj\Debug\Project1HostApp.frmDataloggerSettings.resources
+C:\Dokumente und Einstellungen\kriedel\Eigene Dateien\Visual Studio 2008\Projects\TempDataLogger\obj\Debug\TempLogger.csproj.GenerateResource.Cache
+C:\Dokumente und Einstellungen\kriedel\Eigene Dateien\Visual Studio 2008\Projects\TempDataLogger\obj\Debug\TemperatureLogger.exe
+C:\Dokumente und Einstellungen\kriedel\Eigene Dateien\Visual Studio 2008\Projects\TempDataLogger\obj\Debug\TemperatureLogger.pdb
+C:\Users\Kai\AVR\TempDataLogger\obj\Debug\TemperatureLogger.exe
+C:\Users\Kai\AVR\TempDataLogger\obj\Debug\TemperatureLogger.pdb
+C:\Users\Kai\AVR\TempDataLogger\bin\Debug\TemperatureLogger.exe
+C:\Users\Kai\AVR\TempDataLogger\bin\Debug\TemperatureLogger.pdb
+C:\Users\Kai\AVR\TempDataLogger\bin\Debug\Hid.Net.dll
+C:\Users\Kai\AVR\TempDataLogger\bin\Debug\Hid.Win32.dll
+C:\Users\Kai\AVR\TempDataLogger\bin\Debug\Hid.Linux.dll
+C:\Users\Kai\AVR\TempDataLogger\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\Kai\AVR\TempDataLogger\obj\Debug\Project1HostApp.frmDataloggerSettings.resources
+C:\Users\Kai\AVR\TempDataLogger\obj\Debug\TempLogger.csproj.GenerateResource.Cache
+C:\Dokumente und Einstellungen\kriedel\Eigene Dateien\Visual Studio 2008\Projects\TempDataLogger\obj\Debug\TemperatureLoggerHostApp.Properties.Resources.resources
+C:\Users\Kai\AVR\TempDataLogger\obj\Debug\TemperatureLoggerHostApp.Properties.Resources.resources
+C:\Users\Kai\AVR\TempDataLogger\bin\Debug\ZedGraph.xml
+C:\Users\Kai\AVR\TempDataLogger\bin\Debug\de\ZedGraph.resources.dll
+C:\Users\Kai\AVR\TempDataLogger\bin\Debug\es\ZedGraph.resources.dll
+C:\Users\Kai\AVR\TempDataLogger\bin\Debug\fr\ZedGraph.resources.dll
+C:\Users\Kai\AVR\TempDataLogger\bin\Debug\hu\ZedGraph.resources.dll
+C:\Users\Kai\AVR\TempDataLogger\bin\Debug\it\ZedGraph.resources.dll
+C:\Users\Kai\AVR\TempDataLogger\bin\Debug\ja\ZedGraph.resources.dll
+C:\Users\Kai\AVR\TempDataLogger\bin\Debug\pt\ZedGraph.resources.dll
+C:\Users\Kai\AVR\TempDataLogger\bin\Debug\ru\ZedGraph.resources.dll
+C:\Users\Kai\AVR\TempDataLogger\bin\Debug\sk\ZedGraph.resources.dll
+C:\Users\Kai\AVR\TempDataLogger\bin\Debug\sv\ZedGraph.resources.dll
+C:\Users\Kai\AVR\TempDataLogger\bin\Debug\tr\ZedGraph.resources.dll
+C:\Users\Kai\AVR\TempDataLogger\bin\Debug\zh-cn\ZedGraph.resources.dll
+C:\Users\Kai\AVR\TempDataLogger\bin\Debug\zh-tw\ZedGraph.resources.dll
+I:\Atmel\LUFA101122\Projects\DataLogger\Win\bin\Debug\TemperatureLogger.exe
+I:\Atmel\LUFA101122\Projects\DataLogger\Win\bin\Debug\TemperatureLogger.pdb
+I:\Atmel\LUFA101122\Projects\DataLogger\Win\bin\Debug\Hid.Net.dll
+I:\Atmel\LUFA101122\Projects\DataLogger\Win\bin\Debug\ZedGraph.dll
+I:\Atmel\LUFA101122\Projects\DataLogger\Win\bin\Debug\Hid.Win32.dll
+I:\Atmel\LUFA101122\Projects\DataLogger\Win\bin\Debug\Hid.Linux.dll
+I:\Atmel\LUFA101122\Projects\DataLogger\Win\obj\Debug\ResolveAssemblyReference.cache
+I:\Atmel\LUFA101122\Projects\DataLogger\Win\obj\Debug\Project1HostApp.frmDataloggerSettings.resources
+I:\Atmel\LUFA101122\Projects\DataLogger\Win\obj\Debug\TemperatureLoggerHostApp.Properties.Resources.resources
+I:\Atmel\LUFA101122\Projects\DataLogger\Win\obj\Debug\TempLogger.csproj.GenerateResource.Cache
+I:\Atmel\LUFA101122\Projects\DataLogger\Win\obj\Debug\TemperatureLogger.exe
+I:\Atmel\LUFA101122\Projects\DataLogger\Win\obj\Debug\TemperatureLogger.pdb
+C:\Dokumente und Einstellungen\kriedel\Eigene Dateien\Visual Studio 2008\Projects\Datalogger\obj\Debug\TemperatureLogger.exe
+C:\Dokumente und Einstellungen\kriedel\Eigene Dateien\Visual Studio 2008\Projects\Datalogger\obj\Debug\TemperatureLogger.pdb
+C:\Dokumente und Einstellungen\kriedel\Eigene Dateien\Visual Studio 2008\Projects\Datalogger\bin\Debug\TemperatureLogger.exe
+C:\Dokumente und Einstellungen\kriedel\Eigene Dateien\Visual Studio 2008\Projects\Datalogger\bin\Debug\TemperatureLogger.pdb
+C:\Dokumente und Einstellungen\kriedel\Eigene Dateien\Visual Studio 2008\Projects\Datalogger\bin\Debug\Hid.Net.dll
+C:\Dokumente und Einstellungen\kriedel\Eigene Dateien\Visual Studio 2008\Projects\Datalogger\bin\Debug\skincrafter_.net2.0_vs2005.dll
+C:\Dokumente und Einstellungen\kriedel\Eigene Dateien\Visual Studio 2008\Projects\Datalogger\bin\Debug\ZedGraph.dll
+C:\Dokumente und Einstellungen\kriedel\Eigene Dateien\Visual Studio 2008\Projects\Datalogger\bin\Debug\Hid.Win32.dll
+C:\Dokumente und Einstellungen\kriedel\Eigene Dateien\Visual Studio 2008\Projects\Datalogger\bin\Debug\Hid.Linux.dll
+C:\Dokumente und Einstellungen\kriedel\Eigene Dateien\Visual Studio 2008\Projects\Datalogger\obj\Debug\ResolveAssemblyReference.cache
+C:\Dokumente und Einstellungen\kriedel\Eigene Dateien\Visual Studio 2008\Projects\Datalogger\obj\Debug\Project1HostApp.frmDataloggerSettings.resources
+C:\Dokumente und Einstellungen\kriedel\Eigene Dateien\Visual Studio 2008\Projects\Datalogger\obj\Debug\TemperatureLoggerHostApp.Properties.Resources.resources
+C:\Dokumente und Einstellungen\kriedel\Eigene Dateien\Visual Studio 2008\Projects\Datalogger\obj\Debug\TempLogger.csproj.GenerateResource.Cache
+I:\Atmel\LUFA101122\Projects\DataLogger\Win\bin\Debug\skincrafter_.net2.0_vs2008.dll
+C:\Users\Kai\AVR\LUFA101122\Projects\DataLogger\Win\obj\Debug\TemperatureLogger.exe
+C:\Users\Kai\AVR\LUFA101122\Projects\DataLogger\Win\obj\Debug\TemperatureLogger.pdb
+C:\Users\Kai\AVR\LUFA101122\Projects\DataLogger\Win\bin\Debug\TemperatureLogger.exe
+C:\Users\Kai\AVR\LUFA101122\Projects\DataLogger\Win\bin\Debug\TemperatureLogger.pdb
+C:\Users\Kai\AVR\LUFA101122\Projects\DataLogger\Win\bin\Debug\Hid.Net.dll
+C:\Users\Kai\AVR\LUFA101122\Projects\DataLogger\Win\bin\Debug\skincrafter_.net2.0_vs2008.dll
+C:\Users\Kai\AVR\LUFA101122\Projects\DataLogger\Win\bin\Debug\ZedGraph.dll
+C:\Users\Kai\AVR\LUFA101122\Projects\DataLogger\Win\bin\Debug\Hid.Win32.dll
+C:\Users\Kai\AVR\LUFA101122\Projects\DataLogger\Win\bin\Debug\Hid.Linux.dll
+C:\Users\Kai\AVR\LUFA101122\Projects\DataLogger\Win\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\Kai\AVR\LUFA101122\Projects\DataLogger\Win\obj\Debug\Project1HostApp.frmDataloggerSettings.resources
+C:\Users\Kai\AVR\LUFA101122\Projects\DataLogger\Win\obj\Debug\TemperatureLoggerHostApp.Properties.Resources.resources
+C:\Users\Kai\AVR\LUFA101122\Projects\DataLogger\Win\obj\Debug\TempLogger.csproj.GenerateResource.Cache
+C:\Users\Kai\AVR\LUFA-140302\Projects\DataLogger_V3\Win\obj\Debug\TemperatureLogger.exe
+C:\Users\Kai\AVR\LUFA-140302\Projects\DataLogger_V3\Win\obj\Debug\TemperatureLogger.pdb
+C:\Users\Kai\AVR\LUFA-140302\Projects\DataLogger_V3\Win\bin\Debug\TemperatureLogger.exe
+C:\Users\Kai\AVR\LUFA-140302\Projects\DataLogger_V3\Win\bin\Debug\TemperatureLogger.pdb
+C:\Users\Kai\AVR\LUFA-140302\Projects\DataLogger_V3\Win\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\Kai\AVR\LUFA-140302\Projects\DataLogger_V3\Win\obj\Debug\Project1HostApp.frmDataloggerSettings.resources
+C:\Users\Kai\AVR\LUFA-140302\Projects\DataLogger_V3\Win\obj\Debug\TemperatureLoggerHostApp.Properties.Resources.resources
+C:\Users\Kai\AVR\LUFA-140302\Projects\DataLogger_V3\Win\obj\Debug\TempLogger.csproj.GenerateResource.Cache

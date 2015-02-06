@@ -1,0 +1,1222 @@
+###############################################################################
+#                                                                             #
+# IAR C/C++ Compiler V5.51.1.50592/W32 for MSP430       04/Apr/2014  23:43:43 #
+# Copyright 1996-2012 IAR Systems AB.                                         #
+#                                                                             #
+#    __rt_version  =  3                                                       #
+#    __double_size =  32                                                      #
+#    __reg_r4      =  free                                                    #
+#    __reg_r5      =  free                                                    #
+#    __pic         =  no                                                      #
+#    __core        =  430                                                     #
+#    Source file   =  C:\Users\Kai\AVR\LUFA101122\Projects\DataLogger_V2\Funk #
+#                     modul\main.c                                            #
+#    Command line  =  C:\Users\Kai\AVR\LUFA101122\Projects\DataLogger_V2\Funk #
+#                     modul\main.c -lCN C:\Users\Kai\AVR\LUFA101122\Projects\ #
+#                     DataLogger_V2\Funkmodul\Debug\List\ -o                  #
+#                     C:\Users\Kai\AVR\LUFA101122\Projects\DataLogger_V2\Funk #
+#                     modul\Debug\Obj\ --no_unroll --no_inline --no_tbaa      #
+#                     --debug -D__MSP430F2012__ -e --double=32 --dlib_config  #
+#                     "C:\Program Files\IAR Systems\Embedded Workbench        #
+#                     6.4\430\LIB\DLIB\dl430fn.h" -Om                         #
+#    List file     =  C:\Users\Kai\AVR\LUFA101122\Projects\DataLogger_V2\Funk #
+#                     modul\Debug\List\main.lst                               #
+#    Object file   =  C:\Users\Kai\AVR\LUFA101122\Projects\DataLogger_V2\Funk #
+#                     modul\Debug\Obj\main.r43                                #
+#                                                                             #
+#                                                                             #
+###############################################################################
+
+C:\Users\Kai\AVR\LUFA101122\Projects\DataLogger_V2\Funkmodul\main.c
+      1          /****************************************************************************
+      2           Copyright:      Kai Riedel
+      3           Author:         Kai Riedel
+      4           Remarks:        MSP430F2012 (eZ430)
+      5           Version:        03.06.2011
+      6           Description:    Firmware for radio sensor to temperature data logger
+      7          //------------------------------------------------------------------------------*/
+      8          
+      9          
+     10          #include "io430.h"
+
+   \                                 In  segment DATA16_AN, at 0x2
+   \   union <unnamed> volatile _A_IFG1
+   \                     _A_IFG1:
+   \   000000                DS8 1
+
+   \                                 In  segment DATA16_AN, at 0x1b0
+   \   union <unnamed> volatile _A_ADC10CTL0
+   \                     _A_ADC10CTL0:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x1b2
+   \   union <unnamed> volatile _A_ADC10CTL1
+   \                     _A_ADC10CTL1:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x1b4
+   \   unsigned short volatile ADC10MEM
+   \                     ADC10MEM:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x56
+   \   union <unnamed> volatile _A_DCOCTL
+   \                     _A_DCOCTL:
+   \   000000                DS8 1
+
+   \                                 In  segment DATA16_AN, at 0x57
+   \   union <unnamed> volatile _A_BCSCTL1
+   \                     _A_BCSCTL1:
+   \   000000                DS8 1
+
+   \                                 In  segment DATA16_AN, at 0x58
+   \   union <unnamed> volatile _A_BCSCTL2
+   \                     _A_BCSCTL2:
+   \   000000                DS8 1
+
+   \                                 In  segment DATA16_AN, at 0x53
+   \   union <unnamed> volatile _A_BCSCTL3
+   \                     _A_BCSCTL3:
+   \   000000                DS8 1
+
+   \                                 In  segment DATA16_AN, at 0x20
+   \   union <unnamed> volatile _A_P1IN
+   \                     _A_P1IN:
+   \   000000                DS8 1
+
+   \                                 In  segment DATA16_AN, at 0x21
+   \   union <unnamed> volatile _A_P1OUT
+   \                     _A_P1OUT:
+   \   000000                DS8 1
+
+   \                                 In  segment DATA16_AN, at 0x22
+   \   union <unnamed> volatile _A_P1DIR
+   \                     _A_P1DIR:
+   \   000000                DS8 1
+
+   \                                 In  segment DATA16_AN, at 0x26
+   \   union <unnamed> volatile _A_P1SEL
+   \                     _A_P1SEL:
+   \   000000                DS8 1
+
+   \                                 In  segment DATA16_AN, at 0x27
+   \   union <unnamed> volatile _A_P1REN
+   \                     _A_P1REN:
+   \   000000                DS8 1
+
+   \                                 In  segment DATA16_AN, at 0x120
+   \   union <unnamed> volatile _A_WDTCTL
+   \                     _A_WDTCTL:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_AN, at 0x10fe
+   \   unsigned char const volatile CALDCO_1MHZ
+   \                     CALDCO_1MHZ:
+   \   000000                DS8 1
+
+   \                                 In  segment DATA16_AN, at 0x10ff
+   \   unsigned char const volatile CALBC1_1MHZ
+   \                     CALBC1_1MHZ:
+   \   000000                DS8 1
+     11          #include "intrinsics.h"
+     12          //#include "stdio.h"      // by use of printf
+     13          
+     14          #define Nsel P1OUT_bit.P1 
+     15          #define Sdi P1OUT_bit.P0
+     16          #define Sdo P1IN_bit.P2
+     17          #define Sck P1OUT_bit.P3
+     18          #define Ntc P1OUT_bit.P7
+     19          
+     20          #define TIMEOUT 1000
+     21          #define SENSOR 'A'      // sensor number
+     22          //#define TEMP_MIN_TEMP -21
+     23          //#define TEMP_MAX_TEMP 98
+     24          #define TEMP_MIN_TEMP -40
+     25          #define TEMP_MAX_TEMP 79
+     26          #define TEMP_TABLE_SIZE 120
+     27          #define PACKET_LEN      4
+     28          
+
+   \                                 In  segment DATA16_Z, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     29          unsigned int i;
+   \                     i:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_I, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_copy
+     30          unsigned int transmit_timer=1000;
+   \                     transmit_timer:
+   \   000000                DS8 2
+   \   000002                REQUIRE `?<Initializer for transmit_timer>`
+
+   \                                 In  segment DATA16_Z, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     31          unsigned int rf12_crc;         // running crc value
+   \                     rf12_crc:
+   \   000000                DS8 2
+
+   \                                 In  segment DATA16_Z, align 1, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     32          char buffer [4];
+   \                     buffer:
+   \   000000                DS8 4
+
+   \                                 In  segment DATA16_Z, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     33          long IntDegC;
+   \                     IntDegC:
+   \   000000                DS8 4
+
+   \                                 In  segment DATA16_Z, align 2, align-sorted
+   \   000000                REQUIRE ?cstart_init_zero
+     34          long temp;
+   \                     temp:
+   \   000000                DS8 4
+     35          
+     36          /*static const unsigned int Temperature_Lookup[] = {
+     37             0x3B4, 0x3B0, 0x3AB, 0x3A6, 0x3A0, 0x39A, 0x394, 0x38E, 0x388, 0x381, 0x37A, 0x373,
+     38             0x36B, 0x363, 0x35B, 0x353, 0x34A, 0x341, 0x338, 0x32F, 0x325, 0x31B, 0x311, 0x307,
+     39             0x2FC, 0x2F1, 0x2E6, 0x2DB, 0x2D0, 0x2C4, 0x2B8, 0x2AC, 0x2A0, 0x294, 0x288, 0x27C,
+     40             0x26F, 0x263, 0x256, 0x24A, 0x23D, 0x231, 0x225, 0x218, 0x20C, 0x200, 0x1F3, 0x1E7,
+     41             0x1DB, 0x1CF, 0x1C4, 0x1B8, 0x1AC, 0x1A1, 0x196, 0x18B, 0x180, 0x176, 0x16B, 0x161,
+     42             0x157, 0x14D, 0x144, 0x13A, 0x131, 0x128, 0x11F, 0x117, 0x10F, 0x106, 0x0FE, 0x0F7,
+     43             0x0EF, 0x0E8, 0x0E1, 0x0DA, 0x0D3, 0x0CD, 0x0C7, 0x0C0, 0x0BA, 0x0B5, 0x0AF, 0x0AA,
+     44             0x0A4, 0x09F, 0x09A, 0x096, 0x091, 0x08C, 0x088, 0x084, 0x080, 0x07C, 0x078, 0x074,
+     45             0x071, 0x06D, 0x06A, 0x067, 0x064, 0x061, 0x05E, 0x05B, 0x058, 0x055, 0x053, 0x050,
+     46             0x04E, 0x04C, 0x049, 0x047, 0x045, 0x043, 0x041, 0x03F, 0x03D, 0x03C, 0x03A, 0x038
+     47             };*/
+     48          
+
+   \                                 In  segment DATA16_C, align 2, align-sorted
+     49          static const unsigned int Temperature_Lookup[] = {
+   \                     Temperature_Lookup:
+   \   000000   E903E703E503 DC16 1001, 999, 997, 996, 994, 991, 989, 987, 984, 982, 979, 976, 973
+   \            E403E203DF03
+   \            DD03DB03D803
+   \            D603D303D003
+   \            CD03        
+   \   00001A   C903C603C203 DC16 969, 966, 962, 958, 954, 950, 946, 941, 936, 931, 925, 920, 914
+   \            BE03BA03B603
+   \            B203AD03A803
+   \            A3039D039803
+   \            9203        
+   \   000034   8C0385037F03 DC16 908, 901, 895, 888, 881, 874, 866, 858, 850, 842, 833, 824, 815
+   \            780371036A03
+   \            62035A035203
+   \            4A0341033803
+   \            2F03        
+   \   00004E   26031C031203 DC16 806, 796, 786, 776, 766, 756, 745, 734, 723, 712, 701, 689, 678
+   \            0803FE02F402
+   \            E902DE02D302
+   \            C802BD02B102
+   \            A602        
+   \   000068   9A028F028302 DC16 666, 655, 643, 631, 619, 607, 595, 583, 571, 559, 547, 535, 523
+   \            77026B025F02
+   \            530247023B02
+   \            2F0223021702
+   \            0B02        
+   \   000082   FF01F301E801 DC16 511, 499, 488, 476, 465, 453, 442, 431, 420, 409, 399, 388, 378
+   \            DC01D101C501
+   \            BA01AF01A401
+   \            99018F018401
+   \            7A01        
+   \   00009C   700166015C01 DC16 368, 358, 348, 339, 330, 320, 311, 303, 294, 286, 278, 270, 262
+   \            53014A014001
+   \            37012F012601
+   \            1E0116010E01
+   \            0601        
+   \   0000B6   FE00F700F000 DC16 254, 247, 240, 233, 226, 219, 213, 207, 201, 195, 189, 183, 178
+   \            E900E200DB00
+   \            D500CF00C900
+   \            C300BD00B700
+   \            B200        
+   \   0000D0   AD00A800A300 DC16 173, 168, 163, 158, 153, 149, 144, 140, 136, 132, 128, 124, 121
+   \            9E0099009500
+   \            90008C008800
+   \            840080007C00
+   \            7900        
+   \   0000EA   750072006E00 DC16 117, 114, 110, 107
+   \            6B00        
+     50            0x3E9, 0x3E7, 0x3E5, 0x3E4, 0x3E2, 0x3DF, 0x3DD, 0x3DB, 0x3D8, 0x3D6, 0x3D3,
+     51            0x3D0, 0x3CD, 0x3C9, 0x3C6, 0x3C2, 0x3BE, 0x3BA, 0x3B6, 0x3B2, 0x3AD, 0x3A8,
+     52            0x3A3, 0x39D, 0x398, 0x392, 0x38C, 0x385, 0x37F, 0x378, 0x371, 0x36A, 0x362,
+     53            0x35A, 0x352, 0x34A, 0x341, 0x338, 0x32F, 0x326, 0x31C, 0x312, 0x308, 0x2FE,
+     54            0x2F4, 0x2E9, 0x2DE, 0x2D3, 0x2C8, 0x2BD, 0x2B1, 0x2A6, 0x29A, 0x28F, 0x283,
+     55            0x277, 0x26B, 0x25F, 0x253, 0x247, 0x23B, 0x22F, 0x223, 0x217, 0x20B, 0x1FF,
+     56            0x1F3, 0x1E8, 0x1DC, 0x1D1, 0x1C5, 0x1BA, 0x1AF, 0x1A4, 0x199, 0x18F, 0x184,
+     57            0x17A, 0x170, 0x166, 0x15C, 0x153, 0x14A, 0x140, 0x137, 0x12F, 0x126, 0x11E,
+     58            0x116, 0x10E, 0x106, 0x0FE, 0x0F7, 0x0F0, 0x0E9, 0x0E2, 0x0DB, 0x0D5, 0x0CF,
+     59            0x0C9, 0x0C3, 0x0BD, 0x0B7, 0x0B2, 0x0AD, 0x0A8, 0x0A3, 0x09E, 0x099, 0x095,
+     60            0x090, 0x08C, 0x088, 0x084, 0x080, 0x07C, 0x079, 0x075, 0x072, 0x06E, 0x06B
+     61             };
+     62          
+
+   \                                 In  segment CODE, align 2
+     63          signed char Temperature_GetTemperature(unsigned int Temp_ADC)
+   \                     Temperature_GetTemperature:
+     64          {
+     65          	if (Temp_ADC > Temperature_Lookup[0])
+   \   000000   3C90EA03     CMP.W   #0x3ea, R12
+   \   000004   0328         JNC     ??Temperature_GetTemperature_1
+     66          	  return TEMP_MIN_TEMP;
+   \   000006   7C40D800     MOV.B   #0xd8, R12
+   \   00000A   3041         RET
+     67          
+     68          	for (char Index = 0; Index < TEMP_TABLE_SIZE; Index++)
+   \                     ??Temperature_GetTemperature_1:
+   \   00000C   4E43         MOV.B   #0x0, R14
+   \   00000E   013C         JMP     ??Temperature_GetTemperature_2
+   \                     ??Temperature_GetTemperature_0:
+   \   000010   5E53         ADD.B   #0x1, R14
+   \                     ??Temperature_GetTemperature_2:
+   \   000012   7E907800     CMP.B   #0x78, R14
+   \   000016   092C         JC      ??Temperature_GetTemperature_3
+     69          	{
+     70          		if (Temp_ADC > Temperature_Lookup[Index])
+   \   000018   4F4E         MOV.B   R14, R15
+   \   00001A   0F5F         RLA.W   R15
+   \   00001C   8F9C....     CMP.W   R12, Temperature_Lookup(R15)
+   \   000020   F72F         JC      ??Temperature_GetTemperature_0
+     71          		  return (Index + TEMP_MIN_TEMP);
+   \   000022   7E50D800     ADD.B   #0xd8, R14
+   \   000026   4C4E         MOV.B   R14, R12
+   \   000028   3041         RET
+     72          	}
+     73          
+     74          	return TEMP_MAX_TEMP;
+   \                     ??Temperature_GetTemperature_3:
+   \   00002A   7C404F00     MOV.B   #0x4f, R12
+   \   00002E   3041         RET
+     75          }
+     76          
+     77          
+
+   \                                 In  segment CODE, align 2
+     78          unsigned int Spi16(unsigned int Dout)
+   \                     Spi16:
+     79          {
+     80          
+     81            unsigned int Nspi, Dspi;
+     82            unsigned int Dsdo,D;
+     83          
+     84            Nsel = 0;
+   \   000000   E2C32100     BIC.B   #0x2, &0x21
+     85            Dsdo = 0;
+   \   000004   0F43         MOV.W   #0x0, R15
+     86            D= Dout;
+     87            for (Nspi = 1;Nspi < 17;Nspi++)
+   \   000006   1E43         MOV.W   #0x1, R14
+   \   000008   0F3C         JMP     ??Spi16_2
+     88            {
+     89              Dspi = D & 0x8000;
+     90              if (Dspi == 0) Sdi = 0;
+     91          	else Sdi = 1;
+   \                     ??Spi16_0:
+   \   00000A   D2D32100     BIS.B   #0x1, &0x21
+     92              D = D  << 1;
+   \                     ??Spi16_1:
+   \   00000E   0C5C         RLA.W   R12
+     93              Dsdo = Dsdo  << 1;
+   \   000010   0F5F         RLA.W   R15
+     94          	if (Sdo) Dsdo +=1;
+   \   000012   E2B22000     BIT.B   #0x4, &0x20
+   \   000016   0128         JNC     ??Spi16_3
+   \   000018   1F53         ADD.W   #0x1, R15
+     95              Sck = 1;
+   \                     ??Spi16_3:
+   \   00001A   F2D22100     BIS.B   #0x8, &0x21
+     96              __delay_cycles(5);
+   \   00001E                ////////////// Start of 5 cycles delay.
+   \   00001E   0D12         PUSH.W  R13
+   \   000020   3D41         POP.W   R13
+   \   000022                ////////////// End of delay code.
+     97              Sck = 0;
+   \   000022   F2C22100     BIC.B   #0x8, &0x21
+   \   000026   1E53         ADD.W   #0x1, R14
+   \                     ??Spi16_2:
+   \   000028   3E901100     CMP.W   #0x11, R14
+   \   00002C   052C         JC      ??Spi16_4
+   \   00002E   0C93         CMP.W   #0x0, R12
+   \   000030   EC3B         JL      ??Spi16_0
+   \   000032   D2C32100     BIC.B   #0x1, &0x21
+   \   000036   EB3F         JMP     ??Spi16_1
+     98            }
+     99            Nsel = 1;
+   \                     ??Spi16_4:
+   \   000038   E2D32100     BIS.B   #0x2, &0x21
+    100            return Dsdo;
+   \   00003C   0C4F         MOV.W   R15, R12
+   \   00003E   3041         RET
+   \   000040                REQUIRE _A_P1OUT
+   \   000040                REQUIRE _A_P1IN
+    101          }
+    102          
+
+   \                                 In  segment CODE, align 2
+    103          void RFM12_Init (void)
+   \                     RFM12_Init:
+    104          {
+   \   000000   0A12         PUSH.W  R10
+    105            Nsel = 1;
+   \   000002   E2D32100     BIS.B   #0x2, &0x21
+    106            Sck = 0;
+   \   000006   F2C22100     BIC.B   #0x8, &0x21
+    107            Spi16(0x80e7);      //El , Ef , 11.5pf, 868 MHz band
+   \   00000A   3A40....     MOV.W   #Spi16, R10
+   \   00000E   3C40E780     MOV.W   #0x80e7, R12
+   \   000012   8A12         CALL    R10
+    108            Spi16(0x82d9);      //!er , !ebb , Et , Es , Ex , !eb , !ew , Dc
+   \   000014   3C40D982     MOV.W   #0x82d9, R12
+   \   000018   8A12         CALL    R10
+    109            //Spi16(0xa67c);      // 868,3 MHz
+    110            Spi16(0xa640);      // 868,0 MHz
+   \   00001A   3C4040A6     MOV.W   #0xa640, R12
+   \   00001E   8A12         CALL    R10
+    111            Spi16(0xc647);      // 4.8kbps
+   \   000020   3C4047C6     MOV.W   #0xc647, R12
+   \   000024   8A12         CALL    R10
+    112            //Spi16(0xc691);      // 2.4kbps
+    113            Spi16(0x94a4);      // Vdi , Fast , 134 kHz , 0dbm , -79dbm
+   \   000026   3C40A494     MOV.W   #0x94a4, R12
+   \   00002A   8A12         CALL    R10
+    114            Spi16(0xc2ac);      // Al , !ml , Dig , Dqd4
+   \   00002C   3C40ACC2     MOV.W   #0xc2ac, R12
+   \   000030   8A12         CALL    R10
+    115            Spi16(0xca81);      // Fifo8 , Sync , !ff , Dr
+   \   000032   3C4081CA     MOV.W   #0xca81, R12
+   \   000036   8A12         CALL    R10
+    116            Spi16(0xc483);      // @pwr , No Rstric , !st , !fi , Oe , En
+   \   000038   3C4083C4     MOV.W   #0xc483, R12
+   \   00003C   8A12         CALL    R10
+    117            Spi16(0x9850);      // ±90 kHz , power - 0 dB (maximum)
+   \   00003E   3C405098     MOV.W   #0x9850, R12
+   \   000042   8A12         CALL    R10
+    118            Spi16(0xe000);
+   \   000044   3C4000E0     MOV.W   #0xe000, R12
+   \   000048   8A12         CALL    R10
+    119            Spi16(0xc800);
+   \   00004A   3C4000C8     MOV.W   #0xc800, R12
+   \   00004E   8A12         CALL    R10
+    120            Spi16(0xc000);      // 1 MHz , 2.2V
+   \   000050   3C4000C0     MOV.W   #0xc000, R12
+   \   000054   8A12         CALL    R10
+    121            Spi16(0x0000);      // request status (dummy)
+   \   000056   0C43         MOV.W   #0x0, R12
+   \   000058   8A12         CALL    R10
+    122          }
+   \   00005A   3A41         POP.W   R10
+   \   00005C   3041         RET
+   \   00005E                REQUIRE _A_P1OUT
+    123          
+
+   \                                 In  segment CODE, align 2
+    124          unsigned int Wait_rfm12( unsigned int Timeout)
+   \                     Wait_rfm12:
+    125          {
+    126            unsigned int T;
+    127            
+    128            Nsel = 0;
+   \   000000   E2C32100     BIC.B   #0x2, &0x21
+    129            T = 0;
+   \   000004   0F43         MOV.W   #0x0, R15
+    130            do
+    131            {
+    132               T += 1;
+   \                     ??Wait_rfm12_0:
+   \   000006   1F53         ADD.W   #0x1, R15
+    133               __delay_cycles(100);
+   \   000008                ////////////// Start of 100 cycles delay.
+   \   000008   003C         JMP     ??Wait_rfm12_3
+   \                     ??Wait_rfm12_3:
+   \   00000A   3E401F00     MOV.W   #0x1f, R14
+   \                     ??Wait_rfm12_2:
+   \   00000E   3E53         ADD.W   #0xffff, R14
+   \   000010   FE2F         JC      ??Wait_rfm12_2
+   \   000012                ////////////// End of delay code.
+    134            }
+    135            while ((Sdo == 0) && (T < Timeout));
+   \   000012   E2B22000     BIT.B   #0x4, &0x20
+   \   000016   022C         JC      ??Wait_rfm12_1
+   \   000018   0F9C         CMP.W   R12, R15
+   \   00001A   F52B         JNC     ??Wait_rfm12_0
+    136            if (T < Timeout) return 1; else return 0;
+   \                     ??Wait_rfm12_1:
+   \   00001C   0F9C         CMP.W   R12, R15
+   \   00001E   0C7C         SUBC.W  R12, R12
+   \   000020   1CF3         AND.W   #0x1, R12
+   \   000022   3041         RET
+   \   000024                REQUIRE _A_P1OUT
+   \   000024                REQUIRE _A_P1IN
+    137          }
+    138          
+    139          //Polynomial: x^16 + x^15 + x^2 + 1 (0xa001)
+    140          //Initial value: 0xffff
+
+   \                                 In  segment CODE, align 2
+    141          unsigned int crc16_update(unsigned int crc, unsigned char a)
+   \                     crc16_update:
+    142          {
+    143              unsigned char i;
+    144          
+    145              crc ^= a;
+   \   000000   4D4D         MOV.B   R13, R13
+   \   000002   0CED         XOR.W   R13, R12
+    146              for (i = 0; i < 8; ++i)
+   \   000004   4E43         MOV.B   #0x0, R14
+   \   000006   013C         JMP     ??crc16_update_2
+    147              {
+    148                  if (crc & 1)
+    149                      crc = (crc >> 1) ^ 0xa001;
+    150                  else
+    151                      crc = (crc >> 1);
+   \                     ??crc16_update_0:
+   \   000008   5E53         ADD.B   #0x1, R14
+   \                     ??crc16_update_2:
+   \   00000A   7E92         CMP.B   #0x8, R14
+   \   00000C   092C         JC      ??crc16_update_3
+   \   00000E   0F4C         MOV.W   R12, R15
+   \   000010   12C3         CLRC
+   \   000012   0F10         RRC.W   R15
+   \   000014   1CB3         BIT.W   #0x1, R12
+   \   000016   0C4F         MOV.W   R15, R12
+   \   000018   F72B         JNC     ??crc16_update_0
+   \   00001A   3CE001A0     XOR.W   #0xa001, R12
+   \   00001E   F43F         JMP     ??crc16_update_0
+    152              }
+    153          
+    154              return crc;
+   \                     ??crc16_update_3:
+   \   000020   3041         RET
+    155          }
+    156          
+
+   \                                 In  segment CODE, align 2
+    157          unsigned int Send_rfm12string(char *outstring)
+   \                     Send_rfm12string:
+    158          {
+   \   000000   0A12         PUSH.W  R10
+   \   000002   0B12         PUSH.W  R11
+   \   000004   0812         PUSH.W  R8
+   \   000006   0912         PUSH.W  R9
+   \   000008   0612         PUSH.W  R6
+   \   00000A   0712         PUSH.W  R7
+   \   00000C   0412         PUSH.W  R4
+   \   00000E   0A4C         MOV.W   R12, R10
+    159            unsigned int D;
+    160           
+    161            D = Spi16(0x0000);                      // request status (dummy)
+   \   000010   3B40....     MOV.W   #Spi16, R11
+   \   000014   0C43         MOV.W   #0x0, R12
+   \   000016   8B12         CALL    R11
+    162            if (Wait_rfm12(TIMEOUT) == 0) return 0;
+   \   000018   3840....     MOV.W   #Wait_rfm12, R8
+   \   00001C   3940E803     MOV.W   #0x3e8, R9
+   \   000020   0C49         MOV.W   R9, R12
+   \   000022   8812         CALL    R8
+   \   000024   0C93         CMP.W   #0x0, R12
+   \   000026   6924         JEQ     ??Send_rfm12string_1
+    163            D = Spi16(0xb8aa);
+   \   000028   3640AAB8     MOV.W   #0xb8aa, R6
+   \   00002C   0C46         MOV.W   R6, R12
+   \   00002E   8B12         CALL    R11
+    164            if (Wait_rfm12(TIMEOUT) == 0) return 0;
+   \   000030   0C49         MOV.W   R9, R12
+   \   000032   8812         CALL    R8
+   \   000034   0C93         CMP.W   #0x0, R12
+   \   000036   6124         JEQ     ??Send_rfm12string_1
+    165            D = Spi16(0xb8aa);
+   \   000038   0C46         MOV.W   R6, R12
+   \   00003A   8B12         CALL    R11
+    166            if (Wait_rfm12(TIMEOUT) == 0) return 0;
+   \   00003C   0C49         MOV.W   R9, R12
+   \   00003E   8812         CALL    R8
+   \   000040   0C93         CMP.W   #0x0, R12
+   \   000042   5B24         JEQ     ??Send_rfm12string_1
+    167            D = Spi16(0xb8aa);
+   \   000044   0C46         MOV.W   R6, R12
+   \   000046   8B12         CALL    R11
+    168            if (Wait_rfm12(TIMEOUT) == 0) return 0;
+   \   000048   0C49         MOV.W   R9, R12
+   \   00004A   8812         CALL    R8
+   \   00004C   0C93         CMP.W   #0x0, R12
+   \   00004E   5524         JEQ     ??Send_rfm12string_1
+    169            D = Spi16(0xb82d);
+   \   000050   3C402DB8     MOV.W   #0xb82d, R12
+   \   000054   8B12         CALL    R11
+    170            if (Wait_rfm12(TIMEOUT) == 0) return 0;
+   \   000056   0C49         MOV.W   R9, R12
+   \   000058   8812         CALL    R8
+   \   00005A   0C93         CMP.W   #0x0, R12
+   \   00005C   4E24         JEQ     ??Send_rfm12string_1
+    171            D = Spi16(0xb8d4);
+   \   00005E   3C40D4B8     MOV.W   #0xb8d4, R12
+   \   000062   8B12         CALL    R11
+    172            if (Wait_rfm12(TIMEOUT) == 0) return 0;
+   \   000064   0C49         MOV.W   R9, R12
+   \   000066   8812         CALL    R8
+   \   000068   0C93         CMP.W   #0x0, R12
+   \   00006A   4724         JEQ     ??Send_rfm12string_1
+    173            D = Spi16(0xb800);
+   \   00006C   374000B8     MOV.W   #0xb800, R7
+   \   000070   0C47         MOV.W   R7, R12
+   \   000072   8B12         CALL    R11
+    174            if (Wait_rfm12(TIMEOUT) == 0) return 0;
+   \   000074   0C49         MOV.W   R9, R12
+   \   000076   8812         CALL    R8
+   \   000078   0C93         CMP.W   #0x0, R12
+   \   00007A   3F24         JEQ     ??Send_rfm12string_1
+    175            D = Spi16(0xb800 + PACKET_LEN);          // data length
+   \   00007C   3C4004B8     MOV.W   #0xb804, R12
+   \   000080   8B12         CALL    R11
+    176            if (Wait_rfm12(TIMEOUT) == 0) return 0;
+   \   000082   0C49         MOV.W   R9, R12
+   \   000084   8812         CALL    R8
+   \   000086   0C93         CMP.W   #0x0, R12
+   \   000088   3824         JEQ     ??Send_rfm12string_1
+    177            D = Spi16(0xB800 + SENSOR);              // Send Sensornumber
+   \   00008A   3C4041B8     MOV.W   #0xb841, R12
+   \   00008E   8B12         CALL    R11
+   \   000090   0F3C         JMP     ??Send_rfm12string_2
+    178            while (*outstring != '\0')
+    179            {  
+    180              if (Wait_rfm12(TIMEOUT) == 0) return 0;
+   \                     ??Send_rfm12string_0:
+   \   000092   8812         CALL    R8
+   \   000094   0C93         CMP.W   #0x0, R12
+   \   000096   3124         JEQ     ??Send_rfm12string_1
+    181              D = 0xB800 + *outstring;
+   \   000098   6D4A         MOV.B   @R10, R13
+   \   00009A   444D         MOV.B   R13, R4
+   \   00009C   0457         ADD.W   R7, R4
+    182              rf12_crc = crc16_update(rf12_crc, *outstring);	
+   \   00009E   1C42....     MOV.W   &rf12_crc, R12
+   \   0000A2   B012....     CALL    #crc16_update
+   \   0000A6   824C....     MOV.W   R12, &rf12_crc
+    183              outstring++;
+   \   0000AA   1A53         ADD.W   #0x1, R10
+    184              D = Spi16(D);
+   \   0000AC   0C44         MOV.W   R4, R12
+   \   0000AE   8B12         CALL    R11
+    185            }
+   \                     ??Send_rfm12string_2:
+   \   0000B0   CA930000     CMP.B   #0x0, 0(R10)
+   \   0000B4   0C49         MOV.W   R9, R12
+   \   0000B6   ED23         JNE     ??Send_rfm12string_0
+    186            if (Wait_rfm12(TIMEOUT) == 0) return 0;
+   \   0000B8   8812         CALL    R8
+   \   0000BA   0C93         CMP.W   #0x0, R12
+   \   0000BC   1E24         JEQ     ??Send_rfm12string_1
+    187            D= 0xB800 + (rf12_crc & 0xFF);
+    188            D = Spi16(D);                         //Send Checksum Low
+   \   0000BE   5C42....     MOV.B   &rf12_crc, R12
+   \   0000C2   0C57         ADD.W   R7, R12
+   \   0000C4   8B12         CALL    R11
+    189            if (Wait_rfm12(TIMEOUT) == 0) return 0;
+   \   0000C6   0C49         MOV.W   R9, R12
+   \   0000C8   8812         CALL    R8
+   \   0000CA   0C93         CMP.W   #0x0, R12
+   \   0000CC   1624         JEQ     ??Send_rfm12string_1
+    190            D= 0xB800 + (rf12_crc >> 8);
+    191            D = Spi16(D);                         //Send Checksum High
+   \   0000CE   1C42....     MOV.W   &rf12_crc, R12
+   \   0000D2   8C10         SWPB    R12
+   \   0000D4   7CF3         AND.B   #0xff, R12
+   \   0000D6   0C57         ADD.W   R7, R12
+   \   0000D8   8B12         CALL    R11
+    192            if (Wait_rfm12(TIMEOUT) == 0) return 0;
+   \   0000DA   0C49         MOV.W   R9, R12
+   \   0000DC   8812         CALL    R8
+   \   0000DE   0C93         CMP.W   #0x0, R12
+   \   0000E0   0C24         JEQ     ??Send_rfm12string_1
+    193            D = Spi16(0xb8aa);
+   \   0000E2   0C46         MOV.W   R6, R12
+   \   0000E4   8B12         CALL    R11
+    194            if (Wait_rfm12(TIMEOUT) == 0) return 0;
+   \   0000E6   0C49         MOV.W   R9, R12
+   \   0000E8   8812         CALL    R8
+   \   0000EA   0C93         CMP.W   #0x0, R12
+   \   0000EC   0624         JEQ     ??Send_rfm12string_1
+    195            D = Spi16(0xb8aa);
+   \   0000EE   0C46         MOV.W   R6, R12
+   \   0000F0   8B12         CALL    R11
+    196            if (Wait_rfm12(TIMEOUT) == 0) return 0;
+   \   0000F2   0C49         MOV.W   R9, R12
+   \   0000F4   8812         CALL    R8
+   \   0000F6   0C93         CMP.W   #0x0, R12
+   \   0000F8   0220         JNE     ??Send_rfm12string_3
+   \                     ??Send_rfm12string_1:
+   \   0000FA   0C43         MOV.W   #0x0, R12
+   \   0000FC   013C         JMP     ??Send_rfm12string_4
+    197            return 1;
+   \                     ??Send_rfm12string_3:
+   \   0000FE   1C43         MOV.W   #0x1, R12
+   \                     ??Send_rfm12string_4:
+   \   000100   3040....     BR      #?Epilogue7
+    198          }
+    199          
+
+   \                                 In  segment CODE, align 2
+    200          int ltoa_format (char *erg, long zahl, unsigned int vk, unsigned int nk)
+   \                     ltoa_format:
+    201          { // Out-String, input long, pre-decimal digits, decimal digits, sign '+' or ' ' 
+   \   000000   0A12         PUSH.W  R10
+   \   000002   0B12         PUSH.W  R11
+   \   000004   0812         PUSH.W  R8
+   \   000006   0912         PUSH.W  R9
+   \   000008   0612         PUSH.W  R6
+   \   00000A   0712         PUSH.W  R7
+   \   00000C   0412         PUSH.W  R4
+   \   00000E   0512         PUSH.W  R5
+   \   000010   0B4C         MOV.W   R12, R11
+   \   000012   084E         MOV.W   R14, R8
+   \   000014   094F         MOV.W   R15, R9
+   \   000016   0A4D         MOV.W   R13, R10
+    202            char vorz = '+'; 
+   \   000018   75402B00     MOV.B   #0x2b, R5
+   \   00001C   16411200     MOV.W   0x12(SP), R6
+    203            long temp;
+    204             int  i;
+    205             i = vk + nk + 1;                   	// string length 
+   \   000020   074D         MOV.W   R13, R7
+   \   000022   0756         ADD.W   R6, R7
+   \   000024   1753         ADD.W   #0x1, R7
+   \   000026   0447         MOV.W   R7, R4
+    206             erg[i--] = 0;                      	// string end
+   \   000028   0F4C         MOV.W   R12, R15
+   \   00002A   0F57         ADD.W   R7, R15
+   \   00002C   CF430000     MOV.B   #0x0, 0(R15)
+   \   000030   3453         ADD.W   #0xffff, R4
+    207             if ( zahl == 0 )						// special case input = 0  
+   \   000032   0F4E         MOV.W   R14, R15
+   \   000034   0FD9         BIS.W   R9, R15
+   \   000036   0F93         CMP.W   #0x0, R15
+   \   000038   0F24         JEQ     ??ltoa_format_1
+    208             {
+    209                while( i >= 0 && 
+    210          	       ( zahl > 0 || i+2*( nk != 0 ) >= vk) ) // vk contain sign
+    211          	   	{
+    212          	      if (i==vk&&nk!=0) erg[i--]='.';  // decimal point, if nk is executed
+    213          	      else erg[i--] = '0'; // detach digit, value = 0
+    214          	  	}
+    215                if ( i >= 0 ) erg[i--] = vorz;      	// write sign
+    216              } 
+    217             else 
+    218             {
+    219                if ( zahl < 0 )
+   \   00003A   0993         CMP.W   #0x0, R9
+   \   00003C   2F34         JGE     ??ltoa_format_3
+    220                {
+    221                vorz  = '-';                     // sign = '-'
+   \   00003E   75402D00     MOV.B   #0x2d, R5
+    222                zahl *=  -1;                     // calculate further with positive value
+   \   000042   38E3         XOR.W   #0xffff, R8
+   \   000044   39E3         XOR.W   #0xffff, R9
+   \   000046   1853         ADD.W   #0x1, R8
+   \   000048   0963         ADDC.W  #0x0, R9
+   \   00004A   283C         JMP     ??ltoa_format_3
+    223                }
+   \                     ??ltoa_format_0:
+   \   00004C   0F4C         MOV.W   R12, R15
+   \   00004E   0F54         ADD.W   R4, R15
+   \   000050   FF402E000000 MOV.B   #0x2e, 0(R15)
+   \   000056   3453         ADD.W   #0xffff, R4
+   \                     ??ltoa_format_1:
+   \   000058   0493         CMP.W   #0x0, R4
+   \   00005A   4D38         JL      ??ltoa_format_5
+   \   00005C   0993         CMP.W   #0x0, R9
+   \   00005E   0338         JL      ??ltoa_format_6
+   \   000060   0C20         JNE     ??ltoa_format_7
+   \   000062   1893         CMP.W   #0x1, R8
+   \   000064   0A2C         JC      ??ltoa_format_7
+   \                     ??ltoa_format_6:
+   \   000066   0693         CMP.W   #0x0, R6
+   \   000068   0220         JNE     ??ltoa_format_8
+   \   00006A   4F43         MOV.B   #0x0, R15
+   \   00006C   013C         JMP     ??ltoa_format_9
+   \                     ??ltoa_format_8:
+   \   00006E   5F43         MOV.B   #0x1, R15
+   \                     ??ltoa_format_9:
+   \   000070   0F5F         RLA.W   R15
+   \   000072   0E44         MOV.W   R4, R14
+   \   000074   0E5F         ADD.W   R15, R14
+   \   000076   0E9D         CMP.W   R13, R14
+   \   000078   3E28         JNC     ??ltoa_format_5
+   \                     ??ltoa_format_7:
+   \   00007A   049D         CMP.W   R13, R4
+   \   00007C   0220         JNE     ??ltoa_format_10
+   \   00007E   0693         CMP.W   #0x0, R6
+   \   000080   E523         JNE     ??ltoa_format_0
+   \                     ??ltoa_format_10:
+   \   000082   0F4C         MOV.W   R12, R15
+   \   000084   0F54         ADD.W   R4, R15
+   \   000086   FF4030000000 MOV.B   #0x30, 0(R15)
+   \   00008C   3453         ADD.W   #0xffff, R4
+   \   00008E   E43F         JMP     ??ltoa_format_1
+    224                while( i >= 0 && 
+    225          	       ( zahl > 0 || i+2*( nk != 0 ) > vk) ) // vk contain sign  
+    226                {
+    227                if (i==vk&&nk!=0) erg[i--]='.';  // decimal point, if nk is executed  
+   \                     ??ltoa_format_2:
+   \   000090   0F4B         MOV.W   R11, R15
+   \   000092   0F54         ADD.W   R4, R15
+   \   000094   FF402E000000 MOV.B   #0x2e, 0(R15)
+   \   00009A   3453         ADD.W   #0xffff, R4
+   \                     ??ltoa_format_3:
+   \   00009C   0493         CMP.W   #0x0, R4
+   \   00009E   2B38         JL      ??ltoa_format_5
+   \   0000A0   0993         CMP.W   #0x0, R9
+   \   0000A2   0338         JL      ??ltoa_format_11
+   \   0000A4   0C20         JNE     ??ltoa_format_12
+   \   0000A6   1893         CMP.W   #0x1, R8
+   \   0000A8   0A2C         JC      ??ltoa_format_12
+   \                     ??ltoa_format_11:
+   \   0000AA   0693         CMP.W   #0x0, R6
+   \   0000AC   0220         JNE     ??ltoa_format_13
+   \   0000AE   4E43         MOV.B   #0x0, R14
+   \   0000B0   013C         JMP     ??ltoa_format_14
+   \                     ??ltoa_format_13:
+   \   0000B2   5E43         MOV.B   #0x1, R14
+   \                     ??ltoa_format_14:
+   \   0000B4   0E5E         RLA.W   R14
+   \   0000B6   0F44         MOV.W   R4, R15
+   \   0000B8   0F5E         ADD.W   R14, R15
+   \   0000BA   0A9F         CMP.W   R15, R10
+   \   0000BC   1C2C         JC      ??ltoa_format_5
+   \                     ??ltoa_format_12:
+   \   0000BE   049A         CMP.W   R10, R4
+   \   0000C0   0220         JNE     ??ltoa_format_15
+   \   0000C2   0693         CMP.W   #0x0, R6
+   \   0000C4   E523         JNE     ??ltoa_format_2
+    228                else 
+    229                {
+    230                temp     =  zahl / 10;           	// integer division  
+   \                     ??ltoa_format_15:
+   \   0000C6   0C48         MOV.W   R8, R12
+   \   0000C8   0D49         MOV.W   R9, R13
+   \   0000CA   3E400A00     MOV.W   #0xa, R14
+   \   0000CE   0F43         MOV.W   #0x0, R15
+   \   0000D0   B012....     CALL    #?DivMod32s
+    231                erg[i--] = (zahl - temp*10) + 48; // detach digit, assign ASCII-value
+   \   0000D4   4E4C         MOV.B   R12, R14
+   \   0000D6   4E5E         RLA.B   R14
+   \   0000D8   4F4E         MOV.B   R14, R15
+   \   0000DA   4E5E         RLA.B   R14
+   \   0000DC   4E5E         RLA.B   R14
+   \   0000DE   4E5F         ADD.B   R15, R14
+   \   0000E0   488E         SUB.B   R14, R8
+   \   0000E2   78503000     ADD.B   #0x30, R8
+   \   0000E6   0F4B         MOV.W   R11, R15
+   \   0000E8   0F54         ADD.W   R4, R15
+   \   0000EA   CF480000     MOV.B   R8, 0(R15)
+   \   0000EE   3453         ADD.W   #0xffff, R4
+    232                zahl     =  temp;                	// for next pass reduce digit
+   \   0000F0   084C         MOV.W   R12, R8
+   \   0000F2   094D         MOV.W   R13, R9
+   \   0000F4   D33F         JMP     ??ltoa_format_3
+    233                }
+    234             	  }
+    235             if ( i >= 0 ) erg[i--] = vorz;      	// write sign
+   \                     ??ltoa_format_5:
+   \   0000F6   0493         CMP.W   #0x0, R4
+   \   0000F8   0C38         JL      ??ltoa_format_16
+   \   0000FA   0F4B         MOV.W   R11, R15
+   \   0000FC   0F54         ADD.W   R4, R15
+   \   0000FE   CF450000     MOV.B   R5, 0(R15)
+   \   000102   3453         ADD.W   #0xffff, R4
+   \   000104   063C         JMP     ??ltoa_format_16
+    236             }
+    237             while( i >= 0 ) erg[i--] = ' ';     	// fill begin with spaces
+   \                     ??ltoa_format_4:
+   \   000106   0F4B         MOV.W   R11, R15
+   \   000108   0F54         ADD.W   R4, R15
+   \   00010A   FF4020000000 MOV.B   #0x20, 0(R15)
+   \   000110   3453         ADD.W   #0xffff, R4
+   \                     ??ltoa_format_16:
+   \   000112   0493         CMP.W   #0x0, R4
+   \   000114   F837         JGE     ??ltoa_format_4
+    238             return  vk + nk + 1;                	// return string length
+   \   000116   0C47         MOV.W   R7, R12
+   \   000118   3040....     BR      #?Epilogue8
+    239          }
+    240          
+
+   \                                 In  segment CODE, align 2
+    241          void Timer (void)
+   \                     Timer:
+    242          {
+    243              ADC10CTL0 &= ~ENC;                      // Disable conversion
+   \   000000   A2C3B001     BIC.W   #0x2, &0x1b0
+    244              
+    245              ADC10CTL1 = INCH_5 + ADC10DIV_3;         // ADC Channel A5, ADC10CLK/4, ADC Clock=ADC10OSC
+   \   000004   B2406050B201 MOV.W   #0x5060, &0x1b2
+    246              ADC10CTL0 = SREF_1 + ADC10SHT_3 + REFON + ADC10ON + REFOUT; //64 x ADC10CLKs, Uref=1,5V, ADC enabled
+   \   00000A   B240303AB001 MOV.W   #0x3a30, &0x1b0
+    247              __delay_cycles (200);
+   \   000010                ////////////// Start of 200 cycles delay.
+   \   000010   3F404100     MOV.W   #0x41, R15
+   \                     ??Timer_1:
+   \   000014   3F53         ADD.W   #0xffff, R15
+   \   000016   FE2F         JC      ??Timer_1
+   \   000018                ////////////// End of delay code.
+    248              ADC10CTL0 |= ENC + ADC10SC;             // Sampling and conversion start
+   \   000018   B2D00300B001 BIS.W   #0x3, &0x1b0
+    249              while (ADC10CTL1 & ADC10BUSY);          // ADC10BUSY?
+   \                     ??Timer_0:
+   \   00001E   92B3B201     BIT.W   #0x1, &0x1b2
+   \   000022   FD2F         JC      ??Timer_0
+    250              transmit_timer = 9*ADC10MEM+500;        // store ADC value -> time: ~5s...90s
+   \   000024   1F42B401     MOV.W   &0x1b4, R15
+   \   000028   0E4F         MOV.W   R15, R14
+   \   00002A   0F5F         RLA.W   R15
+   \   00002C   0F5F         RLA.W   R15
+   \   00002E   0F5F         RLA.W   R15
+   \   000030   0F5E         ADD.W   R14, R15
+   \   000032   3F50F401     ADD.W   #0x1f4, R15
+   \   000036   824F....     MOV.W   R15, &transmit_timer
+    251              
+    252              ADC10CTL0=0;                            // Disable ADC
+   \   00003A   8243B001     MOV.W   #0x0, &0x1b0
+    253              ADC10CTL1=0;
+   \   00003E   8243B201     MOV.W   #0x0, &0x1b2
+    254              ADC10CTL0=0;
+   \   000042   8243B001     MOV.W   #0x0, &0x1b0
+    255          }
+   \   000046   3041         RET
+   \   000048                REQUIRE _A_ADC10CTL0
+   \   000048                REQUIRE _A_ADC10CTL1
+   \   000048                REQUIRE ADC10MEM
+    256          
+
+   \                                 In  segment CODE, align 2
+    257          void Transmit(void)
+   \                     Transmit:
+    258          {
+   \   000000   0A12         PUSH.W  R10
+    259              Ntc = 1;                                // enable NTC sensor  
+   \   000002   F2D080002100 BIS.B   #0x80, &0x21
+    260            
+    261              __delay_cycles(5000);                  // wait 3 ms
+   \   000008                ////////////// Start of 5000 cycles delay.
+   \   000008   3F408106     MOV.W   #0x681, R15
+   \                     ??Transmit_4:
+   \   00000C   3F53         ADD.W   #0xffff, R15
+   \   00000E   FE2F         JC      ??Transmit_4
+   \   000010                ////////////// End of delay code.
+    262              
+    263              //ADC10CTL1 = INCH_10 + ADC10DIV_3;         // Internal Temp Sensor ADC10CLK/4, ADC Clock=ADC10OSC
+    264              //ADC10CTL0 = SREF_1 + ADC10SHT_3 + REFON + ADC10ON; //64 x ADC10CLKs, Uref=1,5V, ADC enabled
+    265              
+    266              // external temperature sensor (NTC)
+    267              ADC10CTL1 = INCH_6 + ADC10DIV_3;         // ADC Channel A6, ADC10CLK/4, ADC Clock=ADC10OSC
+   \   000010   B2406060B201 MOV.W   #0x6060, &0x1b2
+    268              ADC10CTL0 = SREF_0 + ADC10SHT_3 + REFON + ADC10ON; //64 x ADC10CLKs, Uref=VCC, ADC enabled
+   \   000016   B2403018B001 MOV.W   #0x1830, &0x1b0
+    269              ADC10CTL0 |= ENC + ADC10SC;             // Sampling and conversion start
+   \   00001C   B2D00300B001 BIS.W   #0x3, &0x1b0
+    270              while (ADC10CTL1 & ADC10BUSY);          // ADC10BUSY?
+   \                     ??Transmit_0:
+   \   000022   92B3B201     BIT.W   #0x1, &0x1b2
+   \   000026   FD2F         JC      ??Transmit_0
+    271              temp = ADC10MEM;                        // store ADC value
+   \   000028   9242B401.... MOV.W   &0x1b4, &temp
+   \   00002E   8243....     MOV.W   #0x0, &temp + 2
+    272                
+    273              Ntc = 0;                                // disable NTC sensor
+   \   000032   F2C080002100 BIC.B   #0x80, &0x21
+    274              
+    275              IntDegC = Temperature_GetTemperature (temp); // calculate temperature, external NTC
+   \   000038   1C42....     MOV.W   &temp, R12
+   \   00003C   B012....     CALL    #Temperature_GetTemperature
+   \   000040   8C11         SXT     R12
+   \   000042   0D4C         MOV.W   R12, R13
+   \   000044   3DE3         XOR.W   #0xffff, R13
+   \   000046   0D5D         RLA.W   R13
+   \   000048   0D7D         SUBC.W  R13, R13
+   \   00004A   824C....     MOV.W   R12, &IntDegC
+   \   00004E   824D....     MOV.W   R13, &IntDegC + 2
+    276              IntDegC += 50;                               // offset for transmission -> no value=zero
+   \   000052   B2503200.... ADD.W   #0x32, &IntDegC
+   \   000058   8263....     ADDC.W  #0x0, &IntDegC + 2
+    277             
+    278              //IntDegC = ((temp - 673) * 423) / 1024;// Calculate temperature value, internal sensor
+    279              //IntDegC += 50;                               // offset for transmission -> no value=zero
+    280              
+    281               ADC10CTL0 &= ~ENC;                      // Disable conversion
+   \   00005C   A2C3B001     BIC.W   #0x2, &0x1b0
+    282                  
+    283               ADC10CTL1 = INCH_11;                    // Select A11 -> AVcc/2
+   \   000060   B24000B0B201 MOV.W   #0xb000, &0x1b2
+    284               ADC10CTL0 = SREF_1 + ADC10SHT_3 + REFON + ADC10ON; //64 x ADC10CLKs, Uref=1,5V, ADC enabled
+   \   000066   B2403038B001 MOV.W   #0x3830, &0x1b0
+    285               __delay_cycles (100);                  // wait 100 µs
+   \   00006C                ////////////// Start of 100 cycles delay.
+   \   00006C   003C         JMP     ??Transmit_7
+   \                     ??Transmit_7:
+   \   00006E   3F401F00     MOV.W   #0x1f, R15
+   \                     ??Transmit_5:
+   \   000072   3F53         ADD.W   #0xffff, R15
+   \   000074   FE2F         JC      ??Transmit_5
+   \   000076                ////////////// End of delay code.
+    286               ADC10CTL0 |= ENC + ADC10SC;             // Sampling and conversion start
+   \   000076   B2D00300B001 BIS.W   #0x3, &0x1b0
+    287               while (ADC10CTL1 & ADC10BUSY);          // ADC10BUSY?
+   \                     ??Transmit_1:
+   \   00007C   92B3B201     BIT.W   #0x1, &0x1b2
+   \   000080   FD2F         JC      ??Transmit_1
+    288               
+    289                Spi16(0x8239);                         // enable RFM12   
+   \   000082   3C403982     MOV.W   #0x8239, R12
+   \   000086   B012....     CALL    #Spi16
+    290                __delay_cycles(5000);                  // wait 3 ms after RFM12 enabled
+   \   00008A                ////////////// Start of 5000 cycles delay.
+   \   00008A   3F408106     MOV.W   #0x681, R15
+   \                     ??Transmit_6:
+   \   00008E   3F53         ADD.W   #0xffff, R15
+   \   000090   FE2F         JC      ??Transmit_6
+   \   000092                ////////////// End of delay code.
+    291               
+    292               if (ADC10MEM < 0x311)                   // ADC10MEM = A11 < 0.65 (VCC < 2,3V) with Uref=1,5V
+   \   000092   B2901103B401 CMP.W   #0x311, &0x1b4
+   \   000098   052C         JC      ??Transmit_2
+    293               {
+    294                  Send_rfm12string("X");               // Send Battery warning message
+   \   00009A   3C40....     MOV.W   #`?<Constant "X">`, R12
+   \   00009E   B012....     CALL    #Send_rfm12string
+   \   0000A2   243C         JMP     ??Transmit_3
+    295               }
+    296               else 
+    297                {
+    298                 ltoa_format(buffer, IntDegC, 2, 0);
+   \                     ??Transmit_2:
+   \   0000A4   0312         PUSH.W  #0x0
+   \   0000A6   2D43         MOV.W   #0x2, R13
+   \   0000A8   1E42....     MOV.W   &IntDegC, R14
+   \   0000AC   1F42....     MOV.W   &IntDegC + 2, R15
+   \   0000B0   3C40....     MOV.W   #buffer, R12
+   \   0000B4   B012....     CALL    #ltoa_format
+    299                 rf12_crc = 0xFFFF;                        // crc initial value
+    300                 rf12_crc = crc16_update(rf12_crc, 0xD4); // group ID for crc16
+   \   0000B8   3A40....     MOV.W   #crc16_update, R10
+   \   0000BC   7D40D400     MOV.B   #0xd4, R13
+   \   0000C0   3C43         MOV.W   #0xffff, R12
+   \   0000C2   8A12         CALL    R10
+   \   0000C4   824C....     MOV.W   R12, &rf12_crc
+   \   0000C8   4D43         MOV.B   #0x0, R13
+    301                 rf12_crc = crc16_update(rf12_crc, 0x00); 
+   \   0000CA   8A12         CALL    R10
+   \   0000CC   824C....     MOV.W   R12, &rf12_crc
+    302                 rf12_crc = crc16_update(rf12_crc, PACKET_LEN); 
+   \   0000D0   6D42         MOV.B   #0x4, R13
+   \   0000D2   8A12         CALL    R10
+   \   0000D4   824C....     MOV.W   R12, &rf12_crc
+    303                 rf12_crc = crc16_update(rf12_crc, SENSOR); 
+   \   0000D8   7D404100     MOV.B   #0x41, R13
+   \   0000DC   8A12         CALL    R10
+   \   0000DE   824C....     MOV.W   R12, &rf12_crc
+    304                 Send_rfm12string(buffer);                // send first telegram
+   \   0000E2   3C40....     MOV.W   #buffer, R12
+   \   0000E6   B012....     CALL    #Send_rfm12string
+   \   0000EA   2153         ADD.W   #0x2, SP
+    305                 }
+    306               
+    307              //printf ("%d\n", IntDegC);             // use as control in terminal window
+    308              //printf ("\n");
+    309              //printf (buffer);    
+    310              
+    311              Spi16(0x8201);                          // set RFM12 in Sleep mode
+   \                     ??Transmit_3:
+   \   0000EC   3C400182     MOV.W   #0x8201, R12
+   \   0000F0   B012....     CALL    #Spi16
+    312              Sdi = 0;
+   \   0000F4   D2C32100     BIC.B   #0x1, &0x21
+    313               
+    314              ADC10CTL0=0;                            // Disable ADC
+   \   0000F8   8243B001     MOV.W   #0x0, &0x1b0
+    315              ADC10CTL1=0;
+   \   0000FC   8243B201     MOV.W   #0x0, &0x1b2
+    316              ADC10CTL0=0;
+   \   000100   8243B001     MOV.W   #0x0, &0x1b0
+    317             
+    318              BCSCTL3 |= LFXT1S_2;                   // LFXT1 = VLO
+   \   000104   F2D020005300 BIS.B   #0x20, &0x53
+    319              IFG1 &= ~OFIFG;                        // Clear OSCFault flag
+   \   00010A   E2C30200     BIC.B   #0x2, &0x2
+    320              BCSCTL2 |= SELM_3 + DIVM_3;            // MCLK = LFXT1/8
+   \   00010E   F2D0F0005800 BIS.B   #0xf0, &0x58
+    321           }
+   \   000114   3A41         POP.W   R10
+   \   000116   3041         RET
+   \   000118                REQUIRE _A_P1OUT
+   \   000118                REQUIRE _A_ADC10CTL1
+   \   000118                REQUIRE _A_ADC10CTL0
+   \   000118                REQUIRE ADC10MEM
+   \   000118                REQUIRE _A_BCSCTL3
+   \   000118                REQUIRE _A_IFG1
+   \   000118                REQUIRE _A_BCSCTL2
+    322          
+    323          
+
+   \                                 In  segment CODE, align 2
+    324          void main( void )
+   \                     main:
+    325          {
+    326            // Stop watchdog timer to prevent time out reset
+    327            WDTCTL = WDTPW + WDTHOLD;
+   \   000000   B240805A2001 MOV.W   #0x5a80, &0x120
+    328          
+    329            BCSCTL1 = CALBC1_1MHZ;      // Set the calibrated clock value
+   \   000006   D242FF105700 MOV.B   &0x10ff, &0x57
+    330            DCOCTL = CALDCO_1MHZ;       // Set DCO step and modulation
+   \   00000C   D242FE105600 MOV.B   &0x10fe, &0x56
+    331          
+    332            //P1DIR = 0xEB;              // P1.0, P1.1, P1.3, P1.5, P1.6, P1.7 outputs, P1.2, P1.4 inputs, internal sensor
+    333            P1DIR = 0x8B;              // P1.0, P1.1, P1.3, P1.4, P1.7 outputs, P1.2, P1.5, P1.6 inputs
+   \   000012   F2408B002200 MOV.B   #0x8b, &0x22
+    334            P1REN = 0x04;              // P1.2 with pull up
+   \   000018   E2422700     MOV.B   #0x4, &0x27
+    335            P1OUT = 0x00;              // All P1.x reset
+   \   00001C   C2432100     MOV.B   #0x0, &0x21
+    336            P1SEL = 0x00;              // select P1.x I/O functions 
+   \   000020   C2432600     MOV.B   #0x0, &0x26
+    337            
+    338            for (i = 10000; i > 0; i--);                 // power on delay
+   \   000024   B2401027.... MOV.W   #0x2710, &i
+   \   00002A   023C         JMP     ??main_3
+   \                     ??main_0:
+   \   00002C   B253....     ADD.W   #0xffff, &i
+   \                     ??main_3:
+   \   000030   8293....     CMP.W   #0x0, &i
+   \   000034   FB23         JNE     ??main_0
+    339           
+    340            Timer();                                    // get timer value for transmit 
+   \   000036   B012....     CALL    #Timer
+    341               
+    342            RFM12_Init ();
+   \   00003A   B012....     CALL    #RFM12_Init
+    343              
+    344            while (1)
+    345            {
+    346              __bic_SR_register(SCG1 + SCG0);          // Start DCO
+   \                     ??main_1:
+   \   00003E   32C0C000     BIC.W   #0xc0, SR
+    347              BCSCTL2 = 0x00;                          // clock default values 
+   \   000042   C2435800     MOV.B   #0x0, &0x58
+    348              
+    349              Transmit();                               // measure temperature, send one telegram
+   \   000046   B012....     CALL    #Transmit
+    350                  
+    351              __bis_SR_register(SCG1 + SCG0);           // Stop DCO -> low power mode
+   \   00004A   32D0C000     BIS.W   #0xc0, SR
+    352              
+    353              for (i = transmit_timer; i > 0; i--);     // Delay 10000x -> ca. 90s with VLO = 12 kHz
+   \   00004E   9242........ MOV.W   &transmit_timer, &i
+   \                     ??main_2:
+   \   000054   8293....     CMP.W   #0x0, &i
+   \   000058   F227         JEQ     ??main_1
+   \   00005A   B253....     ADD.W   #0xffff, &i
+   \   00005E   FA3F         JMP     ??main_2
+   \   000060                REQUIRE _A_WDTCTL
+   \   000060                REQUIRE _A_BCSCTL1
+   \   000060                REQUIRE CALBC1_1MHZ
+   \   000060                REQUIRE _A_DCOCTL
+   \   000060                REQUIRE CALDCO_1MHZ
+   \   000060                REQUIRE _A_P1DIR
+   \   000060                REQUIRE _A_P1REN
+   \   000060                REQUIRE _A_P1OUT
+   \   000060                REQUIRE _A_P1SEL
+   \   000060                REQUIRE _A_BCSCTL2
+    354             }
+    355          }
+
+   \                                 In  segment DATA16_ID, align 2, align-sorted
+   \                     `?<Initializer for transmit_timer>`:
+   \   000000   E803         DC16 1000
+
+   \                                 In  segment DATA16_C, align 1, align-sorted
+   \                     `?<Constant "X">`:
+   \   000000   5800         DC8 "X"
+
+   Maximum stack usage in bytes:
+
+   CSTACK Function
+   ------ --------
+       4  RFM12_Init
+             4 -> Spi16
+      16  Send_rfm12string
+            16 -> Spi16
+            16 -> Wait_rfm12
+            16 -> crc16_update
+       2  Spi16
+       2  Temperature_GetTemperature
+       2  Timer
+       6  Transmit
+             4 -> Send_rfm12string
+             6 -> Send_rfm12string
+             4 -> Spi16
+             4 -> Temperature_GetTemperature
+             6 -> crc16_update
+             6 -> ltoa_format
+       2  Wait_rfm12
+       2  crc16_update
+      18  ltoa_format
+       2  main
+             2 -> RFM12_Init
+             2 -> Timer
+             2 -> Transmit
+
+
+   Segment part sizes:
+
+   Bytes  Function/Label
+   -----  --------------
+       2  ?<Constant "X">
+       2  ?<Initializer for transmit_timer>
+       2  ADC10MEM
+       1  CALBC1_1MHZ
+       1  CALDCO_1MHZ
+       4  IntDegC
+      94  RFM12_Init
+     260  Send_rfm12string
+      64  Spi16
+      48  Temperature_GetTemperature
+     242  Temperature_Lookup
+      72  Timer
+     280  Transmit
+      36  Wait_rfm12
+       2  _A_ADC10CTL0
+       2  _A_ADC10CTL1
+       1  _A_BCSCTL1
+       1  _A_BCSCTL2
+       1  _A_BCSCTL3
+       1  _A_DCOCTL
+       1  _A_IFG1
+       1  _A_P1DIR
+       1  _A_P1IN
+       1  _A_P1OUT
+       1  _A_P1REN
+       1  _A_P1SEL
+       2  _A_WDTCTL
+       4  buffer
+      34  crc16_update
+       2  i
+     284  ltoa_format
+      96  main
+       2  rf12_crc
+       4  temp
+       2  transmit_timer
+
+ 
+ 1 268 bytes in segment CODE
+    20 bytes in segment DATA16_AN
+   244 bytes in segment DATA16_C
+     2 bytes in segment DATA16_I
+     2 bytes in segment DATA16_ID
+    16 bytes in segment DATA16_Z
+ 
+ 1 268 bytes of CODE  memory
+   246 bytes of CONST memory
+    18 bytes of DATA  memory (+ 20 bytes shared)
+
+Errors: none
+Warnings: none
